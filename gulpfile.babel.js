@@ -83,7 +83,7 @@ gulp.task('serve', () => {
             baseDir: ['./'],
         },
         //this is to send event to the index.html page to refresh iframe
-        //source
+        //source https://github.com/BrowserSync/browser-sync/issues/662#issuecomment-110478137
         plugins: [
             {
                 plugin: function () {}, // required for plugin system :(
