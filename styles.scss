@@ -1,0 +1,284 @@
+$promoBg: #f52c38;
+$buttonBg: #eeb111;
+$buttonHover: #000;
+$highlightColor: #00bbd6;
+$textColor: #425968;
+$promoTextColor: #fff;
+$gradientStart: #e0e1e2;
+$gradientStop: #f3f3f4;
+
+@import url(https://fonts.googleapis.com/css?family=PT+Sans:400,700&subset=latin,latin-ext);
+
+html,body {
+  overflow: hidden;
+  box-sizing: border-box;
+  margin: 0 !important;
+  height: 100%;
+  font-weight: bold;
+  font-family: "PT Sans";
+}
+body {
+  background: linear-gradient($gradientStart, $gradientStop);
+  border: 1px solid black;
+}
+
+a {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.header {
+  position:absolute;
+  top:15px;
+  left: -75px;
+  padding: 0 50px;
+  width: 160px;
+  height: 35px;
+  background: $promoBg;
+  color: $promoTextColor;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-size: 20px;
+  line-height: 38px;
+  transform: rotate(-30deg);
+}
+
+@mixin centerHorizontal {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+//images initial position and style
+
+.main-photo {
+  &__item {
+    display: block;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: -1;
+    @include centerHorizontal;
+  }
+  #image1 {
+    top: 85px;
+    width: 116px;
+  }
+  #image2 {
+    top: 5%;
+    height: 200px;
+  }
+  #image3 {
+    top: 77px;
+    width: 72px;
+  }
+  #image4 {
+    height: 200px;
+    top: 50px;
+  }
+
+}
+
+//cta
+
+.button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  display: block;
+  margin: 0 auto;
+  width: 135px;
+  height: 30px;
+  border-radius: 4px;
+  background: $buttonBg;
+  color: $promoTextColor;
+  text-align: center;
+  letter-spacing: 1px;
+  font-weight: normal;
+  font-size: 16px;
+  line-height: 30px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  transform: scale(1) translateY(40px) translateX(-50%);
+  transform-origin: center center;
+  &:hover {
+    clear: $buttonBg;
+    background: $buttonHover;
+  }
+  &.-animated {
+    animation-name: biggerButtonLonger;
+    animation-duration: 2s;
+  }
+}
+
+//footer logo
+
+.footer {
+  &__logo {
+    bottom: 100px;
+    width: 105px;
+    @include centerHorizontal;
+  }
+}
+
+// copy initial position and style
+
+.main-content {
+  width: 100%;
+  &__message {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: 0 auto;
+    width: 95%;
+    color: $textColor;
+    text-align: center;
+    letter-spacing: 1px;
+    font-size: 20px;
+    transform: translateY(-50%) translateX(150%);
+    &.-highlight {
+      color: $highlightColor;
+
+    }
+  }
+
+}
+
+// cta animation
+
+@keyframes biggerButton {
+  0% {
+    transform: translateY(40px) translateX(-50%) scale(1) ;
+  }
+  50% {
+    transform: translateY(40px) translateX(-50%) scale(1.1) ;
+  }
+  100% {
+    transform: translateY(40px) translateX(-50%) scale(1);
+  }
+
+}
+
+@keyframes biggerButtonLonger {
+  0% {
+    transform: translateY(40px) translateX(-50%) scale(1);
+  }
+  25% {
+    transform: translateY(40px) translateX(-50%) scale(1.1);
+  }
+  50% {
+    transform: translateY(40px) translateX(-50%) scale(1);
+  }
+  75% {
+    transform: translateY(40px) translateX(-50%) scale(1.1);
+  }
+  100% {
+    transform: translateY(40px) translateX(-50%) scale(1);
+  }
+}
+
+//animations
+
+@keyframes animateMessageStart {
+  0% {
+    transform: translateY(-50%) translateX(-50%);
+  }
+  70% {
+    transform: translateY(-50%) translateX(-50%);
+  }
+  100% {
+    transform: translateY(-50%) translateX(-150%);
+  }
+}
+
+@keyframes animateMessageRegular {
+  0% {
+    transform: translateY(-50%) translateX(180%);
+  }
+  30% {
+    transform: translateY(-50%) translateX(-50%);
+  }
+  70% {
+    transform: translateY(-50%) translateX(-50%);
+  }
+  100% {
+    transform: translateY(-50%) translateX(-150%);
+  }
+}
+
+@keyframes animateMessageStop {
+  0% {
+    transform: translateY(-50%) translateX(180%);
+  }
+  30% {
+    transform: translateY(-50%) translateX(-50%);
+  }
+  100% {
+    transform: translateY(-50%) translateX(-50%);
+  }
+}
+
+//scenes specific positions and animations
+.scene1 {
+  #image1 {
+    opacity: 1;
+    transition: opacity 0.3s ease;
+  }
+  .main-content__message:first-of-type {
+    animation-name: animateMessageRegular;
+    animation-duration: 3.3s;
+    &.-firstRun {
+      animation-name: animateMessageStart;
+      animation-duration: 3.3s;
+    }
+  }
+}
+
+.scene2 {
+  #image2 {
+    opacity: 1;
+    transition: opacity 0.3s ease;
+  }
+  .main-content__message:nth-of-type(2) {
+    animation-name: animateMessageRegular;
+    animation-duration: 1.8s;
+  }
+}
+
+.scene3 {
+  #image3 {
+    opacity: 1;
+    transition: opacity 0.3s ease;
+  }
+  .main-content__message:nth-of-type(3) {
+    animation-name: animateMessageRegular;
+    animation-duration: 3.3s;
+  }
+  .button {
+    opacity: 1;
+    transition: opacity 0.3s ease;
+    animation-name: biggerButton;
+    animation-duration: 1s;
+  }
+}
+
+.scene4 {
+  #image4 {
+    opacity: 1;
+    transition: opacity 0.3s ease;
+  }
+  .main-content__message:nth-of-type(4) {
+    width: 100%;
+    animation-name: animateMessageRegular;
+    animation-duration: 3.3s;
+    &.-lastRun {
+      transform: translateY(-50%) translateX(-50%);
+      animation-name: animateMessageStop;
+      animation-duration: 3.3s;
+    }
+  }
+  .button {
+    opacity: 1;
+  }
+}
