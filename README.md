@@ -23,3 +23,7 @@ run `gulp` first
 Clicktag implementations differ between different adsystems. You don't need clicktag in google Adwords,
 you need one in other systems.
 
+## Pro tip:
+
+If you want to debug css for one of the scenes, just comment out scripts from index.html and set the desired scene in css
+
