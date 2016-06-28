@@ -19,7 +19,6 @@ const minifyInline = require('gulp-minify-inline-scripts');
 
 gulp.task('styles', () => {
     return gulp.src(srcSCSS)
-        //gulp-changed applies changes only to changed file - improves performance
         .pipe($.changed(DEST))
         .pipe($.plumber())
         .pipe($.sass.sync({
@@ -102,16 +101,18 @@ gulp.task('serve', () => {
             /**
              * Emit custom event to clients
              */
-            instance.io.sockets.emit('custom-event', {file: file});
+
+            setTimeout(()=>instance.io.sockets.emit('custom-event', {file: file}),500)
         });
     });
 
-
-    gulp.watch('dev/**/*.scss', ['styles']);
-    gulp.watch('dev/**/*.js', ['scripts']);
-    gulp.watch('dev/**/*.html', ['html']);
+gulp.watch('dev/**/*.scss', ['styles']);
+gulp.watch('dev/**/*.js', ['scripts']);
+gulp.watch('dev/**/*.html', ['html']);
+gulp.watch(['dev/**/*.png','dev/**/*.jpg','dev/**/*.svg'], ['images']);
 
 });
+
 
 
 function getFolders(dir) {
@@ -132,9 +133,3 @@ gulp.task('zip', () => {
 });
 
 gulp.task('default', ['styles','scripts','html','images'], function() {});
-
-
-
-
-
-
