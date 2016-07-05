@@ -127,20 +127,32 @@ gulp.task('serve', () => {
 });
 
 
-
+// returns recursively dirs fitting to [width]x[height] pattern
 function getFolders(dir) {
-    return fs.readdirSync(dir)
-        .filter(function(file) {
-            return fs.statSync(path.join(dir, file)).isDirectory();
-        });
+    var results = [];
+    var list = fs.readdirSync(dir);
+    var regex = /^[0-9]+x[0-9]+$/;
+    list.forEach(function(fileName) {
+        var file = dir + '/' + fileName;
+        var stat = fs.statSync(file);
+        if (stat && stat.isDirectory()) {
+            if (regex.test(fileName)) {
+                results.push(file);
+            } else {
+                results = results.concat(getFolders(file));
+            }
+        }
+    });
+    return results;
 }
-
 
 gulp.task('zip', () => {
     let folders = getFolders(DEST);
     let tasks = folders.map(function(folder){
-        return gulp.src(path.join(DEST, folder, '**/*'))
-            .pipe($.zip(folder+'.zip'))
+        let filename = folder.replace(DEST+'/', '').replace(/\//g, '_');
+        console.log(filename);
+        return gulp.src(folder)
+            .pipe($.zip(filename+'.zip'))
             .pipe(gulp.dest(ZIPPED));
     });
 });
