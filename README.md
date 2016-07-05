@@ -12,8 +12,6 @@ gulp
 Work in dev directory. Banners list is generated automatically and supports nested directories but make sure that final
 directory is called using `[width]x[height]` pattern and includes `index.html` file as both values are used by build scripts.
 
-*NOTE: Nesting is not recommended if you are going to use `gulp zip` task as it zips only first-level directories*
-
 You can use es6 in javascript file if you use it separately.
 Better not, if you decide to place it in index.html file for the banner.
 
