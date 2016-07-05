@@ -10,16 +10,19 @@
         }
         nav {
             position: absolute;
-            top: 0;
-            left: 0;
+            top: 0; left: 0;
+            padding: 20px;
         }
         ul {
-            margin: 20px 5px;
-            padding-left: 20px;
             display: inline-block;
             width: 50px;
+            margin: 5px;
+            padding: 0;
         }
-        li {
+        ul ul {
+            margin-left: 20px;
+        }
+        li, strong {
             display: inline-block;
         }
         section {
@@ -35,7 +38,6 @@
             position: absolute;
             top: 120px;
             left: 200px;
-            border: none;
             border: 1px dashed grey;
         }
         button {
@@ -48,61 +50,84 @@
             left: 300px;
             top: 800px;
         }
-
     </style>
 
-    <script   src="https://code.jquery.com/jquery-3.0.0.min.js"   integrity="sha256-JmvOoLtYsmqlsWxa7mDSLMwa6dZ9rrIdtrrVYRnDRH0="   crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.0.0.min.js" integrity="sha256-JmvOoLtYsmqlsWxa7mDSLMwa6dZ9rrIdtrrVYRnDRH0=" crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <title>GoogleBannersDev - preview</title>
 </head>
 <body>
 
-<nav>
-    <!--for now you will have to update this list manually
-        place width and height in data-->
-    <ul>
-        <li> <a class="banner-link" href="#" data-width="160" data-height="600" data-folder="output/160x600/index.html">160x600</a></li>
-        <li> <a class="banner-link" href="#" data-width="300" data-height="250" data-folder="output/300x250/index.html">300x250</a></li>
-        <li> <a class="banner-link" href="#" data-width="300" data-height="600" data-folder="output/300x600/index.html">300x600</a></li>
-        <li> <a class="banner-link" href="#" data-width="728" data-height="90" data-folder="output/728x90/index.html">728x90</a></li>
-        <li> <a class="banner-link" href="#" data-width="750" data-height="200" data-folder="output/750x200/index.html">750x200</a></li>
-        <li> <a class="banner-link" href="#" data-width="750" data-height="300" data-folder="output/750x300/index.html">750x300</a></li>
-    </ul>
-</nav>
+    <!-- it generated in JS on the fly from dirs structure -->
+    <nav id="banner-list"></nav>
 
-<section class="display">
-    <h1></h1>
-    <iframe id="banner" class="banner"></iframe>
-    <button id="refresh" class="refresh">Refresh</button><span>Or press i</span>
-</section>
+    <section class="display">
+        <h1 id="title"></h1>
+        <iframe id="banner" class="banner"></iframe>
+        <button id="refresh" class="refresh">Refresh</button><span>Or press i</span>
+    </section>
 
-<script>
-    var clickTagUrl = 'http://example.com'
-    function refreshIframe () {
-        var iframe = document.getElementById('banner');
-        iframe.contentWindow.location.reload(true);
-    }
-    $('.banner-link').click(function(e){
-        e.preventDefault();
-        var width = $(this).attr('data-width') + 'px';
-        var height = $(this).attr('data-height') + 'px';
-        var src = $(this).attr('data-folder');
-        console.log(width, height);
-        $('.banner').css({height:height, width: width}).attr('src',src+'#clickTag='+clickTagUrl);
-        $('h1').html($(this).html());
-    });
-    $('.refresh').click(function(){
-       refreshIframe()
-    });
-    $(document).keydown(function(e) {
-        if (e.which == 73 ) {
-            refreshIframe();
+    <script>
+        var clickTagUrl = 'http://example.com';
+
+        function refreshIframe () {
+            var $iframe = $('#banner');
+            $iframe[0].contentWindow.location.reload(true);
         }
-    });
 
+        // iterates on JSON w/ dirs structure and looks for index.js
+        function findBanners(list, parentTitle) {
+            var $list = $('<ul></ul>');
+            $.each(list, function(key, value){
+                if (value['index.html']) {
+                    var $innerList = $('<li><a>' + key + '</a></li>');
+                    $innerList.find('a').attr({
+                        'href': 'output/' + value['index.html'],
+                        'data-title': parentTitle,
+                        'data-width': key.split("x")[0],
+                        'data-height': key.split("x")[1]
+                    });
+                } else {
+                    var $innerList = $('<li><strong>' + key + '</strong></li>');
+                    $($innerList).append(findBanners(value, key));
+                }
+                $list.append($innerList);
+            });
+            return $list;
+        }
 
-</script>
+        var $bannerList = $('#banner-list');
 
+        $(function() {
+
+            // list banners
+            $.getJSON('output/urls.json', function(data) {
+                $bannerList.append(findBanners(data));
+            });
+
+            // change banner on click
+            $bannerList.on('click', 'a', function(e) {
+                e.preventDefault();
+                $link = $(this);
+                var title = $(this).attr('data-title');
+                var src = $link.attr('href');
+                var width = $(this).attr('data-width') + 'px';
+                var height = $(this).attr('data-height') + 'px';
+                $('#banner').attr('src', src + '#clickTag=' + clickTagUrl).css({height: height, width: width});
+                $('#title').html((title ? title + ' - ' : '') + $link.text());
+            });
+
+            // refresh banner
+            $('#refresh').click(function(){
+                refreshIframe()
+            });
+            $(document).keydown(function(e) {
+                if (e.which == 73 ) {
+                    refreshIframe();
+                }
+            });
+        });
+    </script>
 
 </body>
 </html>

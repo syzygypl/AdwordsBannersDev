@@ -3,6 +3,7 @@ import gulpLoadPlugins from 'gulp-load-plugins';
 import browserSync from 'browser-sync';
 
 const $ = gulpLoadPlugins();
+const del = require('del');
 const reload = browserSync.reload;
 const srcSCSS = 'dev/**/*.scss';
 const srcScripts = 'dev/**/*.js';
@@ -10,12 +11,18 @@ const srcHtml = 'dev/**/*.html';
 const srcImages = ['dev/**/*.png','dev/**/*.jpg','dev/**/*.svg'];
 
 const DEST = 'output';
+const ZIPPED = 'zipped';
 
 const fs = require('fs');
 const path = require('path');
 //gulpLoadPlugins does not work with plugins with dashes (?)
 const minifyInline = require('gulp-minify-inline-scripts');
+const directoryMap = require("gulp-directory-map");
 
+
+gulp.task('clean', () => {
+    del([DEST, ZIPPED]);
+});
 
 gulp.task('styles', () => {
     return gulp.src(srcSCSS)
@@ -31,6 +38,14 @@ gulp.task('styles', () => {
         .pipe(gulp.dest(DEST))
         //uncomment if you want whole page to reload
         // .pipe(reload({stream: true}));
+});
+
+gulp.task('jsonDirs', () => {
+    return gulp.src(srcHtml)
+        .pipe(directoryMap({
+            filename: 'urls.json'
+        }))
+        .pipe(gulp.dest(DEST));
 });
 
 gulp.task('scripts', () => {
@@ -54,8 +69,6 @@ function jshint(files, options) {
 }
 
 gulp.task('jshint', jshint(srcScripts));
-
-
 
 gulp.task('html', function() {
     return gulp.src(srcHtml)
@@ -106,11 +119,11 @@ gulp.task('serve', () => {
         });
     });
 
-gulp.watch('dev/**/*.scss', ['styles']);
-gulp.watch('dev/**/*.js', ['scripts']);
-gulp.watch('dev/**/*.html', ['html']);
-gulp.watch(['dev/**/*.png','dev/**/*.jpg','dev/**/*.svg'], ['images']);
-
+    gulp.watch('dev/**/*.scss', ['styles']);
+    gulp.watch('dev/**/*.js', ['scripts']);
+    gulp.watch('dev/**/*.html', ['html']);
+    gulp.watch('dev/**/*.html', ['jsonDirs']);
+    gulp.watch(['dev/**/*.png','dev/**/*.jpg','dev/**/*.svg'], ['images']);
 });
 
 
@@ -128,8 +141,11 @@ gulp.task('zip', () => {
     let tasks = folders.map(function(folder){
         return gulp.src(path.join(DEST, folder, '**/*'))
             .pipe($.zip(folder+'.zip'))
-            .pipe(gulp.dest('zipped'));
+            .pipe(gulp.dest(ZIPPED));
     });
 });
 
-gulp.task('default', ['styles','scripts','html','images'], function() {});
+gulp.task('build', ['clean'], function() {
+    gulp.start(['jsonDirs','styles','scripts','html','images']);
+});
+gulp.task('default', ['build']);
