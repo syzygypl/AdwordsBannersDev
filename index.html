@@ -35,7 +35,6 @@
             position: absolute;
             top: 120px;
             left: 200px;
-            border: none;
             border: 1px dashed grey;
         }
         button {
@@ -48,61 +47,57 @@
             left: 300px;
             top: 800px;
         }
-
     </style>
 
-    <script   src="https://code.jquery.com/jquery-3.0.0.min.js"   integrity="sha256-JmvOoLtYsmqlsWxa7mDSLMwa6dZ9rrIdtrrVYRnDRH0="   crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.0.0.min.js" integrity="sha256-JmvOoLtYsmqlsWxa7mDSLMwa6dZ9rrIdtrrVYRnDRH0=" crossorigin="anonymous"></script>
     <meta charset="UTF-8">
     <title>GoogleBannersDev - preview</title>
 </head>
 <body>
 
-<nav>
-    <!--for now you will have to update this list manually
-        place width and height in data-->
-    <ul>
-        <li> <a class="banner-link" href="#" data-width="160" data-height="600" data-folder="output/160x600/index.html">160x600</a></li>
-        <li> <a class="banner-link" href="#" data-width="300" data-height="250" data-folder="output/300x250/index.html">300x250</a></li>
-        <li> <a class="banner-link" href="#" data-width="300" data-height="600" data-folder="output/300x600/index.html">300x600</a></li>
-        <li> <a class="banner-link" href="#" data-width="728" data-height="90" data-folder="output/728x90/index.html">728x90</a></li>
-        <li> <a class="banner-link" href="#" data-width="750" data-height="200" data-folder="output/750x200/index.html">750x200</a></li>
-        <li> <a class="banner-link" href="#" data-width="750" data-height="300" data-folder="output/750x300/index.html">750x300</a></li>
-    </ul>
-</nav>
+    <nav>
+        <!--for now you will have to update this list manually
+            place width and height in data-->
+        <ul>
+            <li> <a class="banner-link" href="#" data-width="160" data-height="600" data-folder="output/160x600/">160x600</a></li>
+            <li> <a class="banner-link" href="#" data-width="300" data-height="250" data-folder="output/300x250/index.html">300x250</a></li>
+            <li> <a class="banner-link" href="#" data-width="300" data-height="600" data-folder="output/300x600/index.html">300x600</a></li>
+            <li> <a class="banner-link" href="#" data-width="728" data-height="90" data-folder="output/728x90/index.html">728x90</a></li>
+            <li> <a class="banner-link" href="#" data-width="750" data-height="200" data-folder="output/750x200/index.html">750x200</a></li>
+            <li> <a class="banner-link" href="#" data-width="750" data-height="300" data-folder="output/750x300/index.html">750x300</a></li>
+        </ul>
+    </nav>
 
-<section class="display">
-    <h1></h1>
-    <iframe id="banner" class="banner"></iframe>
-    <button id="refresh" class="refresh">Refresh</button><span>Or press i</span>
-</section>
+    <section class="display">
+        <h1></h1>
+        <iframe id="banner" class="banner"></iframe>
+        <button id="refresh" class="refresh">Refresh</button><span>Or press i</span>
+    </section>
 
-<script>
-    var clickTagUrl = 'http://example.com'
-    function refreshIframe () {
-        var iframe = document.getElementById('banner');
-        iframe.contentWindow.location.reload(true);
-    }
-    $('.banner-link').click(function(e){
-        e.preventDefault();
-        var width = $(this).attr('data-width') + 'px';
-        var height = $(this).attr('data-height') + 'px';
-        var src = $(this).attr('data-folder');
-        console.log(width, height);
-        $('.banner').css({height:height, width: width}).attr('src',src+'#clickTag='+clickTagUrl);
-        $('h1').html($(this).html());
-    });
-    $('.refresh').click(function(){
-       refreshIframe()
-    });
-    $(document).keydown(function(e) {
-        if (e.which == 73 ) {
-            refreshIframe();
+    <script>
+        var clickTagUrl = 'http://example.com';
+        function refreshIframe () {
+            var iframe = document.getElementById('banner');
+            iframe.contentWindow.location.reload(true);
         }
-    });
-
-
-</script>
-
+        $('.banner-link').click(function(e){
+            e.preventDefault();
+            var width = $(this).attr('data-width') + 'px';
+            var height = $(this).attr('data-height') + 'px';
+            var src = $(this).attr('data-folder');
+            console.log(width, height);
+            $('.banner').css({height:height, width: width}).attr('src',src+'#clickTag='+clickTagUrl);
+            $('h1').html($(this).html());
+        });
+        $('.refresh').click(function(){
+           refreshIframe()
+        });
+        $(document).keydown(function(e) {
+            if (e.which == 73 ) {
+                refreshIframe();
+            }
+        });
+    </script>
 
 </body>
 </html>

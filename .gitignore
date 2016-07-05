@@ -1,4 +1,6 @@
 node_modules
+output
+zipped
 .idea
 .DS_Store
 *DS_Store*
