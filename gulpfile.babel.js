@@ -15,6 +15,7 @@ const fs = require('fs');
 const path = require('path');
 //gulpLoadPlugins does not work with plugins with dashes (?)
 const minifyInline = require('gulp-minify-inline-scripts');
+const directoryMap = require("gulp-directory-map");
 
 
 gulp.task('styles', () => {
@@ -31,6 +32,14 @@ gulp.task('styles', () => {
         .pipe(gulp.dest(DEST))
         //uncomment if you want whole page to reload
         // .pipe(reload({stream: true}));
+});
+
+gulp.task('jsonDirs', () => {
+    return gulp.src(srcHtml)
+        .pipe(directoryMap({
+            filename: 'urls.json'
+        }))
+        .pipe(gulp.dest(DEST));
 });
 
 gulp.task('scripts', () => {
@@ -106,11 +115,11 @@ gulp.task('serve', () => {
         });
     });
 
-gulp.watch('dev/**/*.scss', ['styles']);
-gulp.watch('dev/**/*.js', ['scripts']);
-gulp.watch('dev/**/*.html', ['html']);
-gulp.watch(['dev/**/*.png','dev/**/*.jpg','dev/**/*.svg'], ['images']);
-
+    gulp.watch('dev/**/*.scss', ['styles']);
+    gulp.watch('dev/**/*.js', ['scripts']);
+    gulp.watch('dev/**/*.html', ['html']);
+    gulp.watch('dev/**/*.html', ['jsonDirs']);
+    gulp.watch(['dev/**/*.png','dev/**/*.jpg','dev/**/*.svg'], ['images']);
 });
 
 
@@ -132,4 +141,4 @@ gulp.task('zip', () => {
     });
 });
 
-gulp.task('default', ['styles','scripts','html','images'], function() {});
+gulp.task('default', ['jsonDirs','styles','scripts','html','images'], function() {});
