@@ -17,11 +17,13 @@ directory is called using `[width]x[height]` pattern and includes `index.html` f
 You can use es6 in javascript file if you use it separately.
 Better not, if you decide to place it in index.html file for the banner.
 
-run `gulp` first
+`gulp build` or `gulp` builds the project.
 
-`gulp serve` starts index.html with iframes of correct size. On change, the iframe itself is reloaded. 
+`gulp serve` starts index.html with iframes of correct size. On change, the iframe itself is reloaded.
 
-`gulp zip` creates ziped folders
+`gulp zip` creates zipped folders
+
+*NOTE: `gulp serve` should bu used only for development as it doesn't clean output directory before build*
 
 ## Remarks about clicktag
 
