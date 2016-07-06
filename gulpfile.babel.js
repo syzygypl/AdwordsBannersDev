@@ -151,13 +151,13 @@ gulp.task('zip', () => {
     let tasks = folders.map(function(folder){
         let filename = folder.replace(DEST+'/', '').replace(/\//g, '_');
         console.log(filename);
-        return gulp.src(folder)
+        return gulp.src(folder+'/**/*')
             .pipe($.zip(filename+'.zip'))
             .pipe(gulp.dest(ZIPPED));
     });
 });
 
 gulp.task('build', ['clean'], function() {
-    gulp.start(['jsonDirs','styles','scripts','html','images']);
+    gulp.start(['html', 'images', 'styles', 'scripts', 'jsonDirs']);
 });
 gulp.task('default', ['build']);
