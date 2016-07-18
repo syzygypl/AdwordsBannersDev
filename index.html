@@ -1,97 +1,192 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <style>
+    <meta charset="UTF-8">
+    <title>GoogleBannersDev - preview</title>
+    <link type="text/css" rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" />
+    <link type="text/css" rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lato:400,300,700&amp;subset=latin,latin-ext" />
+    <style type="text/css">
+        *,
+        *:before,
+        *:after {
+            box-sizing: border-box;
+        }
+
         body {
-            margin-top: 100px;
+            min-width: 360px;
+            margin: 0;
+            padding: 0;
+            font: normal 14px/1.5 "Lato", Arial, sans-serif;
+            background: #fcfcfc;
+            color: #222;
         }
-        iframe {
-            margin: 10px;
+
+        .h1, .h2 {
+            margin: 0;
+            font-weight: 300;
         }
-        nav {
+
+        .nav {
             position: absolute;
-            top: 0; left: 0;
-            padding: 20px;
+            top: 0;
+            bottom: 0;
+            left: 0;
+            width: 320px;
+            overflow: auto;
+            border-right: 1px solid #ddd;
+            background: #f3f3f3;
+            box-shadow: 0 2px 8px 0 rgba(0, 0, 0, .2);
         }
-        ul {
-            display: inline-block;
-            width: 50px;
-            margin: 5px;
+
+        .nav ul {
+            margin: 0;
             padding: 0;
         }
-        ul ul {
-            margin-left: 20px;
+        .nav ul ul {
+            padding-left: 10px;
         }
-        li, strong {
+        .nav ul li {
+            list-style: none;
+        }
+
+        .nav__item {
+            display: block;
+            padding: .75em 1.25em;
+            margin-top: -1px;
+            border-top: 1px solid #f3f3f3;
+            border-bottom: 1px solid #f3f3f3;
+            background: #fff;
+            color: inherit;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all .4s;
+        }
+
+        .nav__trigger {
+            position: absolute;
+            left: -99px;
+        }
+
+        .nav__label:before {
             display: inline-block;
+            vertical-align: middle;
+            width: 1em;
+            font-size: 1.25em;
+            content: '+ ';
         }
-        section {
-            padding-top: 200px;
-            height: 100vh;
+        .nav__trigger:checked ~ .nav__label:before {
+            content: '- ';
         }
-        h1 {
-            position: absolute;
-            top: 20px;
-            left: 220px;
+
+        .nav__trigger ~ .nav__group {
+            display: none;
         }
-        iframe {
-            position: absolute;
-            top: 120px;
-            left: 200px;
-            border: 1px solid #aaa;
+        .nav__trigger:checked ~ .nav__group {
+            display: block;
+        }
+
+        a.nav__item:hover,
+        a.nav__item.-active {
+            background: #f1f1f1;
+        }
+        a.nav__item.-active {
+            font-weight: bold;
+        }
+
+        .nav__group .nav__label {
+            background: rgba(38, 166, 154, 1);
+            color: #fff;
+        }
+        .nav__group .nav__group .nav__label { background: rgba(38, 166, 154, .85); }
+        .nav__group .nav__group .nav__group .nav__label { background: rgba(38, 166, 154, .7) }
+
+        .main {
+            min-height: 100vh;
+            margin-left: 320px;
+            padding: 20px 40px;
+        }
+
+        .header {
+            margin: -20px -40px 40px;
+            padding: 20px 40px;;
+            background: #ee6e73;
+            color: #fff;
+        }
+
+        .header__bottom {
+            margin: 20px -40px -20px;
+            padding: 20px 40px;
+            background: #df696e;
+        }
+
+        .main,
+        .preview {
             background-color: #fafafa;
             background-image: linear-gradient(45deg, #aaa 25%, transparent 25%),
                               linear-gradient(135deg, #aaa 25%, transparent 25%),
                               linear-gradient(45deg, transparent 75%, #aaa 75%),
                               linear-gradient(135deg, transparent 75%, #aaa 75%);
-            background-size: 30px 30px;
-            -webkit-background-size: 30px 31px;
-            background-position: 0 0, 15px 0, 15px -15px, 0 15px;
+            background-size: 40px 40px;
+            -webkit-background-size: 40px 41px;
+            background-position: 0 0, 20px 0, 20px -20px, 0 20px;
+            background-attachment: fixed;
         }
-        button {
-            position: absolute;
-            left: 200px;
-            top: 800px;
+
+        .preview {
+            position: relative;
+            float: left;
         }
-        span {
+        .preview:before {
+            content: '';
             position: absolute;
-            left: 300px;
-            top: 800px;
+            top: 0; bottom: 0;
+            left: 0; right: 0;
+            background: #000;
+            opacity: .2;
+        }
+
+        .banner {
+            position: relative;
+            display: block;
+            border: 0;
         }
     </style>
-
-    <script src="https://code.jquery.com/jquery-3.0.0.min.js" integrity="sha256-JmvOoLtYsmqlsWxa7mDSLMwa6dZ9rrIdtrrVYRnDRH0=" crossorigin="anonymous"></script>
-    <meta charset="UTF-8">
-    <title>GoogleBannersDev - preview</title>
+    <script src="//code.jquery.com/jquery-3.0.0.min.js" integrity="sha256-JmvOoLtYsmqlsWxa7mDSLMwa6dZ9rrIdtrrVYRnDRH0=" crossorigin="anonymous"></script>
 </head>
+
 <body>
+    <!-- content is generated on the fly from dirs structure and loaded w/ JS -->
+    <nav id="banner-list" class="nav"></nav>
 
-    <!-- it generated in JS on the fly from dirs structure -->
-    <nav id="banner-list"></nav>
+    <main class="main">
+        <header class="header">
+            <h1 class="h1">
+                GoogleBannersDev - preview
+            </h1>
+            <div class="header__bottom">
+                <h2 id="banner-name" class="h2">
+                    ?
+                </h2>
+            </div>
+        </header>
 
-    <section class="display">
-        <h1 id="title"></h1>
-        <iframe id="banner" class="banner"></iframe>
-        <button id="refresh" class="refresh">Refresh</button><span>Or press i</span>
-    </section>
+        <!-- banner preview -->
+        <div class="preview">
+            <iframe id="banner" class="banner"></iframe>
+        </div>
+    </main>
 
     <script>
         var clickTagUrl = 'http://example.com';
 
-        function refreshIframe () {
-            var $iframe = $('#banner');
-            $iframe[0].contentWindow.location.reload(true);
-        }
-
         // iterates on JSON w/ dirs structure and looks for index.js
         function findBanners(list, parentTitle) {
-            var $list = $('<ul></ul>');
+            var $list = $('<ul class="nav__group"></ul>');
             $.each(list, function(key, value){
                 var $innerList;
                 if (value['index.html']) {
-                    $innerList = $('<li><a>' + key + '</a></li>');
+                    $innerList = $('<li><a class="nav__item">' + key + '</a></li>');
                     let size = (key.indexOf('_') !== -1) ? key.substring(0, key.indexOf('_')) : key;
-                    console.log(size);
                     $innerList.find('a').attr({
                         'href': 'output/' + value['index.html'],
                         'data-title': parentTitle,
@@ -99,7 +194,8 @@
                         'data-height': size.split("x")[1]
                     });
                 } else {
-                    $innerList = $('<li><strong>' + key + '</strong></li>');
+                    var id = key + '_' + Math.floor((Math.random() * 1000)); // salt
+                    $innerList = $('<li><input class="nav__trigger" type="checkbox" id="' + id + '" /><label for="' + id + '" class="nav__item nav__label">' + key + '</label></li>');
                     $($innerList).append(findBanners(value, key));
                 }
                 $list.append($innerList);
@@ -121,22 +217,14 @@
             $bannerList.on('click', 'a', function(e) {
                 e.preventDefault();
                 $link = $(this);
+                $bannerList.find('a').removeClass('-active');
+                $link.addClass('-active');
                 var title = $(this).attr('data-title');
                 var src = $link.attr('href');
                 var width = $(this).attr('data-width') + 'px';
                 var height = $(this).attr('data-height') + 'px';
                 $('#banner').attr('src', src + '#clickTag=' + clickTagUrl).css({height: height, width: width});
-                $('#title').html((title ? title + ' - ' : '') + $link.text());
-            });
-
-            // refresh banner
-            $('#refresh').click(function(){
-                refreshIframe()
-            });
-            $(document).keydown(function(e) {
-                if (e.which == 73 ) {
-                    refreshIframe();
-                }
+                $('#banner-name').html((title ? title + ' - ' : '') + $link.text());
             });
         });
     </script>
