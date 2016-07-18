@@ -188,7 +188,7 @@
                     $innerList = $('<li><a class="nav__item">' + key + '</a></li>');
                     let size = (key.indexOf('_') !== -1) ? key.substring(0, key.indexOf('_')) : key;
                     $innerList.find('a').attr({
-                        'href': 'output/' + value['index.html'],
+                        'href': 'build/' + value['index.html'],
                         'data-title': parentTitle,
                         'data-width': size.split("x")[0],
                         'data-height': size.split("x")[1]
@@ -209,7 +209,7 @@
         $(function() {
 
             // list banners
-            $.getJSON('output/urls.json', function(data) {
+            $.getJSON('urls.json', function(data) {
                 $bannerList.append(findBanners(data));
             });
 

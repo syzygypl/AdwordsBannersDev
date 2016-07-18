@@ -9,16 +9,18 @@ import path from 'path';
 
 const $ = gulpLoadPlugins();
 
-const srcSCSS = 'dev/**/*.scss';
-const srcScripts = 'dev/**/*.js';
-const srcHtml = 'dev/**/*.html';
-const srcImages = ['dev/**/*.png','dev/**/*.jpg','dev/**/*.svg'];
+const SRC = 'src/banners';
 
-const DEST = 'output';
+const srcSCSS = SRC+'/**/*.scss';
+const srcScripts = SRC+'/**/*.js';
+const srcHtml = SRC+'/**/*.html';
+const srcImages = [SRC+'/**/*.png', SRC+'/**/*.jpg', SRC+'/**/*.svg'];
+
+const DEST = 'build';
 const ZIPPED = 'zipped';
 
 gulp.task('clean', () => {
-    return del([DEST, ZIPPED]);
+    return del([DEST, ZIPPED, './urls.json']);
 });
 
 gulp.task('styles', () => {
@@ -58,7 +60,7 @@ gulp.task('jsonDirs', () => {
         .pipe($.directoryMap({
             filename: 'urls.json'
         }))
-        .pipe(gulp.dest(DEST));
+        .pipe(gulp.dest('./'));
 });
 
 gulp.task('html', ['jsonDirs'], () => {
@@ -107,10 +109,10 @@ gulp.task('zip', () => {
 });
 
 var watcher = (gulp) => {
-    gulp.watch('dev/**/*.html', ['html']);
-    gulp.watch(['dev/**/*.png','dev/**/*.jpg','dev/**/*.svg'], ['images']);
-    gulp.watch('dev/**/*.scss', ['styles']);
-    gulp.watch('dev/**/*.js', ['scripts']);
+    gulp.watch(srcHtml, ['html']);
+    gulp.watch(srcImages, ['images']);
+    gulp.watch(srcSCSS, ['styles']);
+    gulp.watch(srcScripts, ['scripts']);
 };
 
 gulp.task('serve', ['build'], () => {
