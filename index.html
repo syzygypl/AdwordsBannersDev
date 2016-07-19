@@ -101,13 +101,14 @@
         .nav__group .nav__group .nav__group .nav__label { background: rgba(38, 166, 154, .7) }
 
         .main {
+            display: flex;
+            flex-direction: column;
             min-height: 100vh;
             margin-left: 320px;
-            padding: 20px 40px;
+            background: #fcfcfc;
         }
 
         .header {
-            margin: -20px -40px 40px;
             padding: 20px 40px;;
             background: #ee6e73;
             color: #fff;
@@ -119,36 +120,38 @@
             background: #df696e;
         }
 
-        .main,
-        .preview {
-            background-color: #fafafa;
-            background-image: linear-gradient(45deg, #aaa 25%, transparent 25%),
-                              linear-gradient(135deg, #aaa 25%, transparent 25%),
-                              linear-gradient(45deg, transparent 75%, #aaa 75%),
-                              linear-gradient(135deg, transparent 75%, #aaa 75%);
-            background-size: 40px 40px;
-            -webkit-background-size: 40px 41px;
-            background-position: 0 0, 20px 0, 20px -20px, 0 20px;
-            background-attachment: fixed;
-        }
-
         .preview {
             position: relative;
-            float: left;
-        }
-        .preview:before {
-            content: '';
-            position: absolute;
-            top: 0; bottom: 0;
-            left: 0; right: 0;
-            background: #000;
-            opacity: .2;
+            flex: 1;
+            overflow: auto;
+            background: #fafafa url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoAQMAAAC2MCouAAAABlBMVEX6+vqqqqpMNfusAAAAF0lEQVQI12NgYOD//38AyP//PwBZdCcBldZjnYv368QAAAAASUVORK5CYII=);
+            text-align: center;
         }
 
         .banner {
             position: relative;
+            z-index: 3;
+            display: inline-block;
+        }
+
+        .banner__frame {
+            position: relative;
             display: block;
+            margin: 40px;
             border: 0;
+        }
+
+        .banner__wallpaper,
+        .banner__mask {
+            position: absolute;
+            z-index: 1;
+            top: 0; bottom: 0;
+            left: 0; right: 0;
+            background: transparent no-repeat top center;
+        }
+
+        .banner__mask {
+            z-index: 2;
         }
     </style>
     <script src="//code.jquery.com/jquery-3.0.0.min.js" integrity="sha256-JmvOoLtYsmqlsWxa7mDSLMwa6dZ9rrIdtrrVYRnDRH0=" crossorigin="anonymous"></script>
@@ -165,66 +168,123 @@
             </h1>
             <div class="header__bottom">
                 <h2 id="banner-name" class="h2">
-                    ?
+                    &larr; Choose banner from the list
                 </h2>
             </div>
         </header>
 
         <!-- banner preview -->
-        <div class="preview">
-            <iframe id="banner" class="banner"></iframe>
+        <div id="preview" class="preview">
+            <div class="banner">
+                <iframe id="banner" class="banner__frame"></iframe>
+            </div>
+            <div id="banner-wallpaper" class="banner__wallpaper"></div>
+            <div id="banner-mask" class="banner__mask"></div>
         </div>
     </main>
 
     <script>
+        const $preview = $('#preview');
+        const $banner = $('#banner');
+        const $bannerWallpaper = $('#banner-wallpaper');
+        const $bannerMask = $('#banner-mask');
+        const $bannerList = $('#banner-list');
+        const $bannerName = $('#banner-name');
+        var $activeBannerLink;
+
         var clickTagUrl = 'http://example.com';
 
         // iterates on JSON w/ dirs structure and looks for index.js
-        function findBanners(list, parentTitle) {
+        function listBanners(list) {
             var $list = $('<ul class="nav__group"></ul>');
             $.each(list, function(key, value){
                 var $innerList;
-                if (value['index.html']) {
+                if (value['config.json']) {
                     $innerList = $('<li><a class="nav__item">' + key + '</a></li>');
-                    let size = (key.indexOf('_') !== -1) ? key.substring(0, key.indexOf('_')) : key;
                     $innerList.find('a').attr({
-                        'href': 'build/' + value['index.html'],
-                        'data-title': parentTitle,
-                        'data-width': size.split("x")[0],
-                        'data-height': size.split("x")[1]
+                        'data-config': 'src/banners/' + value['config.json']
                     });
                 } else {
                     var id = key + '_' + Math.floor((Math.random() * 1000)); // salt
                     $innerList = $('<li><input class="nav__trigger" type="checkbox" id="' + id + '" /><label for="' + id + '" class="nav__item nav__label">' + key + '</label></li>');
-                    $($innerList).append(findBanners(value, key));
+                    $($innerList).append(listBanners(value));
                 }
                 $list.append($innerList);
             });
             return $list;
         }
 
-        var $bannerList = $('#banner-list');
+        function objIsSet(object) {
+            return typeof object !== 'undefined';
+        }
 
-        // Document ready
+        function clearBanner() {
+            $preview.removeAttr('style');
+            $banner.removeAttr('style');
+            $bannerWallpaper.removeAttr('style');
+            $bannerMask.removeAttr('style');
+        }
+
+        function loadBanner($link, changeSrc) {
+            clearBanner();
+
+            $.getJSON($link.attr('data-config'), function(data) {
+                var root = $link.attr('data-config').replace('config.json', '').replace('src/banners/', 'build/');
+                var title = objIsSet(data.title) ? data.title : $link.text();
+                var bannerStyles = data.banner.styles;
+
+                $bannerName.html(title);
+                $banner.css(bannerStyles);
+
+                if (objIsSet(data.mask)) {
+                    $bannerMask.css('background-image', 'url(src/masks/'+data.mask+')');
+                }
+
+                if (objIsSet(data.wallpaper)) {
+                    var wallpaperStyles = data.wallpaper.styles;
+
+                    $preview.css('background', '#fff');
+
+                    var color =  objIsSet(data.wallpaper.color) ? data.wallpaper.color : 'transparent';
+                    $bannerWallpaper.css({
+                        'background-image': 'url(' + root + data.wallpaper.path + ')',
+                        'background-color': color
+                    });
+
+                    if (objIsSet(wallpaperStyles)) {
+                        $bannerWallpaper.css(wallpaperStyles);
+                    }
+                }
+
+                if (changeSrc) {
+                    $link.attr('href', root + data.banner.path);
+                    $banner.attr('src', $link.attr('href') + '#clickTag=' + clickTagUrl)
+                }
+            });
+        }
+
+        // document ready
         $(function() {
-
             // list banners
             $.getJSON('urls.json', function(data) {
-                $bannerList.append(findBanners(data));
+                $bannerList.append(listBanners(data));
             });
 
-            // change banner on click
+            // load banner on click
             $bannerList.on('click', 'a', function(e) {
                 e.preventDefault();
-                $link = $(this);
+
+                $activeBannerLink = $(this);
+
                 $bannerList.find('a').removeClass('-active');
-                $link.addClass('-active');
-                var title = $(this).attr('data-title');
-                var src = $link.attr('href');
-                var width = $(this).attr('data-width') + 'px';
-                var height = $(this).attr('data-height') + 'px';
-                $('#banner').attr('src', src + '#clickTag=' + clickTagUrl).css({height: height, width: width});
-                $('#banner-name').html((title ? title + ' - ' : '') + $link.text());
+                $activeBannerLink.addClass('-active');
+
+                loadBanner($activeBannerLink, true);
+            });
+
+            // load banner on iframe load
+            $banner.on('load', function(){
+                loadBanner($activeBannerLink);
             });
         });
     </script>

@@ -1,0 +1,10 @@
+{
+	"title": "Example - 750x200 - static",
+	"banner": {
+		"path": "750x200.jpg",
+		"styles": {
+			"width": "750px",
+			"height": "200px"
+		}
+	}
+}

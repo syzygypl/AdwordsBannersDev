@@ -7,12 +7,37 @@ clone repository
 npm install
 ```
 
-## Usage
-Work in `dev` directory. Banners list is generated automatically and supports nested directories but make sure that final
-directory is called using **[width]x[height]** (with optional **_anything** suffix) pattern as both values are used by
-build scripts. Make sure to include `index.html` in your main directory.
+## Configuration
+Work in `src` directory. Banners are stored in `src/banners`. Each banners needs to contain `config.json` file with
+banner's configuration. Overlay masks (to preview banner on mock website) are stored in `src/masks`.
+
+```javascript
+{
+  "title": "Example - screening with 750x200 banner",
+  "banner": {
+    "path": "750x200_double-bilboard/index.html", // required - relative path, can be path to *.html or static image
+    "styles": {
+        "width": "750px", // required
+        "height": "200px", // required
+        "margin-top": "50px" // space from top - overwrites default value
+    }
+  },
+  // optional - background image
+  "wallpaper": {
+    "path": "wallpaper.jpg", // relative path
+    "color": "#fff"
+  },
+  // optional - overlay mask from `src/masks`
+  "mask": "~example.png"
+}
+```
+
+Banners list is generated automatically (locates all `config.json` and lists `banners.path`) and supports nested
+directories.
 
 You can use ES6 for external JavaScript files. Better not, if you decide to place it in `index.html` file for the banner.
+
+## Usage
 
 `gulp clean` removes output files.
 

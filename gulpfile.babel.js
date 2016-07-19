@@ -9,18 +9,24 @@ import path from 'path';
 
 const $ = gulpLoadPlugins();
 
+
 const SRC = 'src/banners';
 
 const srcSCSS = SRC+'/**/*.scss';
 const srcScripts = SRC+'/**/*.js';
 const srcHtml = SRC+'/**/*.html';
-const srcImages = [SRC+'/**/*.png', SRC+'/**/*.jpg', SRC+'/**/*.svg'];
+const srcConfig = SRC+'/**/*/config.json';
+const srcImages = [SRC+'/**/*.png', SRC+'/**/*.gif', SRC+'/**/*.jpg', SRC+'/**/*.svg', SRC+'/**/*.psd'];
+
+const srcMasks = ['src/masks/**/*.png', 'src/masks/**/*.gif'];
 
 const DEST = 'build';
 const ZIPPED = 'zipped';
 
+const destUrlsMap = 'urls.json';
+
 gulp.task('clean', () => {
-    return del([DEST, ZIPPED, './urls.json']);
+    return del([DEST, ZIPPED, destUrlsMap]);
 });
 
 gulp.task('styles', () => {
@@ -56,9 +62,9 @@ gulp.task('jshint', () => {
 });
 
 gulp.task('jsonDirs', () => {
-    return gulp.src(srcHtml)
+    return gulp.src(srcConfig)
         .pipe($.directoryMap({
-            filename: 'urls.json'
+            filename: destUrlsMap
         }))
         .pipe(gulp.dest('./'));
 });
@@ -77,29 +83,28 @@ gulp.task('images', () => {
         .pipe(gulp.dest(DEST));
 });
 
+// returns array with paths to dirs with config.json file
+var banners = [];
+function getBanners(list) {
+    //var innerBanners = [];
 
-// returns recursively dirs fitting to [width]x[height] pattern
-function getFolders(dir) {
-    var results = [];
-    var list = fs.readdirSync(dir);
+    for(var key in list) {
+        if (list.hasOwnProperty(key)) {
+            var value = list[key];
 
-    const dirPattern = /[0-9]+x[0-9]+([_].{1,})?$/;
-    list.forEach((fileName) => {
-        let file = dir + '/' + fileName;
-        let stat = fs.statSync(file);
-        if (stat && stat.isDirectory()) {
-            if (dirPattern.test(fileName)) {
-                results.push(file);
+            if (value['config.json']) {
+                banners.push('build/' + value['config.json'].replace('/config.json' ,''));
             } else {
-                results = results.concat(getFolders(file));
+                banners.concat(getBanners(value));
             }
         }
-    });
-    return results;
+    }
+
+    return banners;
 }
 
 gulp.task('zip', () => {
-    let folders = getFolders(DEST);
+    let folders = getBanners(require('./'+destUrlsMap));
     folders.map((folder) => {
         let filename = folder.replace(DEST+'/', '').replace(/\//g, '_');
         return gulp.src(folder+'/**/*')
@@ -107,6 +112,7 @@ gulp.task('zip', () => {
             .pipe(gulp.dest(ZIPPED));
     });
 });
+
 
 var watcher = (gulp) => {
     gulp.watch(srcHtml, ['html']);
@@ -134,7 +140,7 @@ gulp.task('serve', ['build'], () => {
         }]
     }, (err, instance) => {
         // Custom watcher for all files with test/fixtures directory
-        browserSync.watch(DEST+'/**/*').on('change', (file) => {
+        browserSync.watch([srcMasks, srcConfig, DEST+'/**/*']).on('change', (file) => {
             // Emit custom event to clients
             instance.io.sockets.emit('custom-event', { file: file })
         });
@@ -144,4 +150,5 @@ gulp.task('serve', ['build'], () => {
 gulp.task('build', ['clean'], (cb) => {
     runSequence(['html', 'images', 'styles', 'scripts'], cb);
 });
+
 gulp.task('default', ['build']);
