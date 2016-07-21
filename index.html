@@ -103,7 +103,7 @@
         .main {
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
+            height: 100vh;
             margin-left: 320px;
             background: #fcfcfc;
         }
@@ -128,13 +128,13 @@
             text-align: center;
         }
 
-        .banner {
+        .banners {
             position: relative;
             z-index: 3;
             display: inline-block;
         }
 
-        .banner__frame {
+        .banner {
             position: relative;
             display: block;
             margin: 40px;
@@ -175,8 +175,8 @@
 
         <!-- banner preview -->
         <div id="preview" class="preview">
-            <div class="banner">
-                <iframe id="banner" class="banner__frame"></iframe>
+            <div id="banners" class="banners">
+                <!--<iframe id="banner" class="banner__frame"></iframe>-->
             </div>
             <div id="banner-wallpaper" class="banner__wallpaper"></div>
             <div id="banner-mask" class="banner__mask"></div>
@@ -185,11 +185,12 @@
 
     <script>
         const $preview = $('#preview');
-        const $banner = $('#banner');
+        const $banners = $('#banners');
         const $bannerWallpaper = $('#banner-wallpaper');
         const $bannerMask = $('#banner-mask');
         const $bannerList = $('#banner-list');
         const $bannerName = $('#banner-name');
+        const bannerClass = '.banner';
         var $activeBannerLink;
 
         var clickTagUrl = 'http://example.com';
@@ -218,23 +219,57 @@
             return typeof object !== 'undefined';
         }
 
-        function clearBanner() {
+        function clearScene(removeBanners) {
+            if (removeBanners) {
+                $banners.html('');
+            }
             $preview.removeAttr('style');
-            $banner.removeAttr('style');
             $bannerWallpaper.removeAttr('style');
             $bannerMask.removeAttr('style');
         }
 
-        function loadBanner($link, changeSrc) {
-            clearBanner();
+        function loadBanners($link, refresh) {
+            clearScene(!refresh);
+
+            var root = $link.attr('data-config').replace('config.json', '').replace('src/banners/', 'build/');
 
             $.getJSON($link.attr('data-config'), function(data) {
-                var root = $link.attr('data-config').replace('config.json', '').replace('src/banners/', 'build/');
                 var title = objIsSet(data.title) ? data.title : $link.text();
-                var bannerStyles = data.banner.styles;
-
                 $bannerName.html(title);
-                $banner.css(bannerStyles);
+
+                var noBanners = $banners.children(bannerClass).length;
+
+                // remove banners if removed from config
+                if (noBanners > data.banners.length) {
+                    for (i = data.banners.length; i < noBanners; i++) {
+                        $banners.children(bannerClass).eq(i).remove();
+                    }
+                }
+
+                $.each(data.banners, function(i, banner) {
+                    // new banner or existing
+                    var $banner = $('<iframe class="banner" />');
+                    var newBanner = true;
+
+                    if (refresh) {
+                        var $existingBanner = $banners.children(bannerClass).eq(i);
+                        if ($existingBanner.length) {
+                            $banner = $existingBanner;
+                            newBanner = false;
+                        }
+                    }
+
+                    $link.attr('href', root + banner.path);
+                    $banner.css(banner.styles).attr('src', $link.attr('href') + '#clickTag=' + clickTagUrl);
+
+                    if (newBanner) {
+                        $banner.appendTo($banners)
+                                .on('load', function () {
+                                    loadBanners($activeBannerLink, true);
+                                });
+                    }
+
+                });
 
                 if (objIsSet(data.mask)) {
                     $bannerMask.css('background-image', 'url(src/masks/'+data.mask+')');
@@ -255,11 +290,6 @@
                         $bannerWallpaper.css(wallpaperStyles);
                     }
                 }
-
-                if (changeSrc) {
-                    $link.attr('href', root + data.banner.path);
-                    $banner.attr('src', $link.attr('href') + '#clickTag=' + clickTagUrl)
-                }
             });
         }
 
@@ -279,13 +309,9 @@
                 $bannerList.find('a').removeClass('-active');
                 $activeBannerLink.addClass('-active');
 
-                loadBanner($activeBannerLink, true);
+                loadBanners($activeBannerLink);
             });
 
-            // load banner on iframe load
-            $banner.on('load', function(){
-                loadBanner($activeBannerLink);
-            });
         });
     </script>
 

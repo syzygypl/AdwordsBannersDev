@@ -1,10 +1,12 @@
 {
 	"title": "Example - Triple Bilboard (750x300)",
-	"banner": {
-		"path": "index.html",
-		"styles": {
-			"width": "750px",
-			"height": "300px"
+	"banners": [
+		{
+			"path": "index.html",
+			"styles": {
+				"width": 750,
+				"height": 300
+			}
 		}
-	}
+	]
 }

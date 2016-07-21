@@ -1,10 +1,12 @@
 {
 	"title": "Example - 728x90",
-	"banner": {
-		"path": "index.html",
-		"styles": {
-			"width": "728px",
-			"height": "90px"
+	"banners": [
+		{
+			"path": "index.html",
+			"styles": {
+				"width": 728,
+				"height": 90
+			}
 		}
-	}
+	]
 }

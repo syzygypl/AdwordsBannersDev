@@ -13,22 +13,25 @@ banner's configuration. Overlay masks (to preview banner on mock website) are st
 
 ```javascript
 {
-  "title": "Example - screening with 750x200 banner",
-  "banner": {
-    "path": "750x200_double-bilboard/index.html", // required - relative path, can be path to *.html or static image
-    "styles": {
-        "width": "750px", // required
-        "height": "200px", // required
-        "margin-top": "50px" // space from top - overwrites default value
-    }
-  },
-  // optional - background image
-  "wallpaper": {
-    "path": "wallpaper.jpg", // relative path
-    "color": "#fff"
-  },
-  // optional - overlay mask from `src/masks`
-  "mask": "~example.png"
+	"title": "Example - screening with 750x200 banner",
+	// banners can contain multiple objects
+	"banners": [
+		{
+			"path": "750x200_double-bilboard/index.html", // required - relative path, can be path to *.html or static image
+			"styles": {
+				"width": 750, // required - unitless or with unit as string (e.g. "50%")
+				"height": 200, // required
+				"margin-top": 50 // space from top - overwrites default value
+			}
+		}
+	],
+	// optional - background image
+	"wallpaper": {
+		"path": "wallpaper.jpg", // relative path
+		"color": "#fff"
+	},
+	// optional - overlay mask from `src/masks`
+	"mask": "~example.png"
 }
 ```
 
