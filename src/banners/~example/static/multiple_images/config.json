@@ -1,0 +1,19 @@
+{
+	"title": "Example - Multiple images - 560x320, 850x480 - static",
+	"banners": [
+		{
+			"path": "560x320.jpg",
+			"styles": {
+				"width": 560,
+				"height": 320
+			}
+		},
+		{
+			"path": "850x480.jpg",
+			"styles": {
+				"width": 850,
+				"height": 480
+			}
+		}
+	]
+}

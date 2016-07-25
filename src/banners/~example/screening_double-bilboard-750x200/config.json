@@ -1,0 +1,20 @@
+{
+	"title": "Example - screening with 750x200 banner",
+	"banners": [
+		{
+			"path": "750x200_double-bilboard/index.html",
+			"styles": {
+				"width": 750,
+				"height": 200,
+				"margin-top": 50
+			}
+		}
+	],
+	"wallpaper": {
+		"path": "wallpaper.jpg",
+		"styles": {
+			"background-color": "#fff"
+		}
+	},
+	"mask": "~example.png"
+}

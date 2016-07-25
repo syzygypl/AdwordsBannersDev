@@ -1,0 +1,12 @@
+{
+	"title": "Example - 728x90",
+	"banners": [
+		{
+			"path": "index.html",
+			"styles": {
+				"width": 728,
+				"height": 90
+			}
+		}
+	]
+}

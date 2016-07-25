@@ -1,7 +1,9 @@
 node_modules
 output
+build
 zipped
 .DS_Store
 *DS_Store*
 .idea
 .sass-cache
+urls.json

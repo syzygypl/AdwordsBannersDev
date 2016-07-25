@@ -1,0 +1,12 @@
+{
+	"title": "Example - 160x600",
+	"banners": [
+		{
+			"path": "index.html",
+			"styles": {
+				"width": 160,
+				"height": 600
+			}
+		}
+	]
+}
