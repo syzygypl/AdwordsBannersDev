@@ -1,11 +1,13 @@
 # AdwordsBannersDev
 Gulp configuration and bootstrap for HTML5 Adwords Banners development
 
+
 ## Installation
 clone repository
 ```
 npm install
 ```
+
 
 ## Configuration
 Work in `src` directory. Banners are stored in `src/banners`. Each banners needs to contain `config.json` file with
@@ -35,29 +37,36 @@ banner's configuration. Overlay masks (to preview banner on mock website) are st
 }
 ```
 
-Banners list is generated automatically (locates all `config.json` and lists `banners.path`) and supports nested
-directories.
+Banners list is generated on the fly (gulp locates all `config.json` files and lists values from `banners.path` object)
+and supports nested directories.
 
 You can use ES6 for external JavaScript files. Better not, if you decide to place it in `index.html` file for the banner.
 
+
 ## Usage
 
-`gulp clean` removes output files.
+`gulp clean` removes output files - `build`, `zipped` and `urls.json`.
 
-`gulp` / `gulp build` cleans `output` and builds the project.
+`gulp` / `gulp build` cleans and builds the project.
 
-`gulp serve` serves the project with list of banners and refreshes the page on files change in `dev` directory
+`gulp serve` serves the project with list of banners and refreshes the page on file change in `src` directory
 
-`gulp zip` creates zipped folders with banners
+`gulp zip` creates zipped folders from **current** content of `build` directory
 
+**NOTE**: *`gulp serve` should bu used only for development as `build` may contain renamed / removed files*
 
-**NOTE**: *`gulp serve` should bu used only for development as `output` may contain renamed / removed files*
+### Stream filtering
+
+To narrow working stream to specific directory `--filter` parameter can be applied. It works with both `gulp build` and
+ `gulp serve` tasks. For example `gulp serve --filter ~example` will build and serve only banners located inside
+ `banners/~example` directory.
+
 
 ## Remarks about clicktag
 
 Clicktag implementations differ between different adsystems. You don't need clickTag in google Adwords,
 you need one in other systems.
 
+
 ## Pro tip:
 If you want to debug css for one of the scenes, just comment out scripts from index.html and set the desired scene in css
-

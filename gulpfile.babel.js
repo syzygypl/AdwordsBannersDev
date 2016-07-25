@@ -7,10 +7,13 @@ import del from 'del';
 import fs from 'fs';
 import path from 'path';
 
+import { argv } from 'yargs';
+var filter = argv.filter ? '/' + argv.filter : '';
+
 const $ = gulpLoadPlugins();
 
 
-const SRC = 'src/banners';
+const SRC = 'src/banners' + filter;
 
 const srcSCSS = SRC+'/**/*.scss';
 const srcScripts = SRC+'/**/*.js';
@@ -20,13 +23,14 @@ const srcImages = [SRC+'/**/*.png', SRC+'/**/*.gif', SRC+'/**/*.jpg', SRC+'/**/*
 
 const srcMasks = ['src/masks/**/*.png', 'src/masks/**/*.gif'];
 
-const DEST = 'build';
+const DEST = 'build' + filter;
 const ZIPPED = 'zipped';
 
 const destUrlsMap = 'urls.json';
 
 gulp.task('clean', () => {
-    return del([DEST, ZIPPED, destUrlsMap]);
+    // substring makes us sure that we clean whole content even if filter parameter is passed
+    return del([DEST.substring(0, DEST.indexOf('/')), ZIPPED, destUrlsMap]);
 });
 
 gulp.task('styles', () => {
@@ -64,7 +68,8 @@ gulp.task('jshint', () => {
 gulp.task('jsonDirs', () => {
     return gulp.src(srcConfig)
         .pipe($.directoryMap({
-            filename: destUrlsMap
+            filename: destUrlsMap,
+            prefix: filter.substring(1)
         }))
         .pipe(gulp.dest('./'));
 });
@@ -86,14 +91,12 @@ gulp.task('images', () => {
 // returns array with paths to dirs with config.json file
 var banners = [];
 function getBanners(list) {
-    //var innerBanners = [];
-
     for(var key in list) {
         if (list.hasOwnProperty(key)) {
             var value = list[key];
 
             if (value['config.json']) {
-                banners.push('build/' + value['config.json'].replace('/config.json' ,''));
+                banners.push(DEST + '/' + value['config.json'].replace('/config.json' ,''));
             } else {
                 banners.concat(getBanners(value));
             }
@@ -106,7 +109,7 @@ function getBanners(list) {
 gulp.task('zip', () => {
     let folders = getBanners(require('./'+destUrlsMap));
     folders.map((folder) => {
-        let filename = folder.replace(DEST+'/', '').replace(/\//g, '_');
+        let filename = folder.replace(DEST + '/', '').replace(/\//g, '_');
         return gulp.src(folder+'/**/*')
             .pipe($.zip(filename+'.zip'))
             .pipe(gulp.dest(ZIPPED));
