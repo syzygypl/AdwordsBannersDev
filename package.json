@@ -31,7 +31,7 @@
     "adwords"
   ],
   "author": "Piotr Hałasiewicz",
-  "license": "ISC",
+  "license": "SEE LICENSE IN LICENSE.MD",
   "devDependencies": {
     "babel-core": "^6.9.1",
     "babel-preset-es2015": "^6.9.0",
