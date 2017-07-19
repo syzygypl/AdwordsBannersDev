@@ -20,6 +20,7 @@ const srcScripts = SRC+'/**/*.js';
 const srcHtml = SRC+'/**/*.html';
 const srcConfig = SRC+'/**/*/config.json';
 const srcImages = [SRC+'/**/*.png', SRC+'/**/*.gif', SRC+'/**/*.jpg', SRC+'/**/*.svg', SRC+'/**/*.psd'];
+const srcFonts = [SRC+'/**/*.woff', SRC+'/**/*.woff2', SRC+'/**/*.eot', SRC+'/**/*.ttf', SRC+'/**/*.otf'];
 
 const srcMasks = ['src/masks/**/*.png', 'src/masks/**/*.gif'];
 
@@ -88,6 +89,12 @@ gulp.task('images', () => {
         .pipe(gulp.dest(DEST));
 });
 
+gulp.task('fonts', () => {
+  gulp.src(srcFonts)
+    .pipe($.cached('fonts'))
+    .pipe(gulp.dest(DEST));
+});
+
 // returns array with paths to dirs with config.json file
 var banners = [];
 function getBanners(list) {
@@ -151,7 +158,7 @@ gulp.task('serve', ['build'], () => {
 });
 
 gulp.task('build', ['clean'], (cb) => {
-    runSequence(['html', 'images', 'styles', 'scripts'], cb);
+    runSequence(['html', 'images', 'fonts', 'styles', 'scripts'], cb);
 });
 
 gulp.task('default', ['build']);
